@@ -1,0 +1,24 @@
+# Render Blueprint: Dashboard → New → Blueprint → pick this repo.
+services:
+  - type: web
+    name: hiredove-api
+    runtime: python
+    plan: free
+    region: frankfurt # same region as the Neon DB
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Free plan has no pre-deploy step, so migrations run on start.
+    # --proxy-headers makes request.client.host the real user IP (needed for login rate limiting).
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips='*'
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: ENVIRONMENT
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false # paste the Neon connection string in the dashboard
+      - key: CORS_ORIGINS
+        sync: false # e.g. https://hiredove.vercel.app
