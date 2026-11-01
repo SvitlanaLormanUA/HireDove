@@ -5,6 +5,7 @@ services:
     runtime: python
     plan: free
     region: frankfurt # same region as the Neon DB
+    autoDeployTrigger: checksPass # deploy main only after GitHub CI is green
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     # Free plan has no pre-deploy step, so migrations run on start.
