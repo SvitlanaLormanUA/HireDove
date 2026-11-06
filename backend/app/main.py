@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.routes import auth
 from app.core.config import get_settings
+from app.api.routes import auth, vacancies
 
 settings = get_settings()
 logger = logging.getLogger("hiredove")
@@ -42,3 +43,4 @@ def health() -> dict[str, str]:
 
 
 app.include_router(auth.router)
+app.include_router(vacancies.router)

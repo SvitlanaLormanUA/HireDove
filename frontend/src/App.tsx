@@ -1,10 +1,11 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { GuestOnlyRoute, ProtectedRoute } from './auth/ProtectedRoute'
 import { DashboardPage } from './pages/DashboardPage'
 import { ErrorPage } from './pages/ErrorPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { CatalogPage } from './pages/CatalogPage'
 
 export default function App() {
   return (
@@ -25,7 +26,7 @@ export default function App() {
           </Route> */}
 
           {/* Until the public vacancy catalog exists, "/" goes to the dashboard. */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<CatalogPage />} />
           <Route path="*" element={<ErrorPage code={404} />} />
         </Routes>
       </AuthProvider>
