@@ -8,6 +8,7 @@ pydantic[email]>=2.9
 pyjwt>=2.9
 bcrypt>=4.2
 python-multipart>=0.0.12
+Pillow>=11.0
 
 # dev / tests
 pytest>=8.3

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { SaveVacancyButton } from '../candidate/SaveVacancyButton'
 import { EXPERIENCE_LABELS, WORK_FORMAT_LABELS, type VacancyCardData } from '../../api/vacancies'
 
 // SQLite returns timestamps without a timezone; treat those as UTC.
@@ -16,7 +17,7 @@ function timeAgo(iso: string): string {
   return rtf.format(Math.round(diffMin / (60 * 24)), 'day')
 }
 
-export function VacancyCard({ vacancy }: { vacancy: VacancyCardData }) {
+export function VacancyCard({ vacancy, showSave = true }: { vacancy: VacancyCardData; showSave?: boolean }) {
   return (
     <article className="vacancy-card">
       <header>
@@ -34,6 +35,7 @@ export function VacancyCard({ vacancy }: { vacancy: VacancyCardData }) {
         <li>{vacancy.industry}</li>
       </ul>
       <p className="vacancy-snippet">{vacancy.snippet}</p>
+      {showSave && <SaveVacancyButton vacancyId={vacancy.id} />}
       <footer>
         <time dateTime={parseDate(vacancy.created_at).toISOString()}>{timeAgo(vacancy.created_at)}</time>
         <Link to={`/vacancies/${vacancy.id}`} className="details-link">

@@ -30,6 +30,7 @@ export interface AuthContextValue {
   register: (data: RegisterData) => Promise<User>
   logout: () => Promise<void>
   logoutAll: () => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

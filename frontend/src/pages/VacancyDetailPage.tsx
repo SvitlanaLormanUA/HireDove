@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { SaveVacancyButton } from '../components/candidate/SaveVacancyButton'
 import { Link, useParams } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import { fetchCompanyProfile, type CompanyProfile } from '../api/employer'
@@ -178,6 +179,7 @@ export function VacancyDetailPage() {
         </footer>
       </article>
 
+      {vacancy.status === 'active' && <SaveVacancyButton key={vacancy.id} vacancyId={vacancy.id} />}
       {/* Modal for application info (candidates and guests only) */}
       {applyModalOpen && !isEmployer && (
         <div className="modal-backdrop" onClick={() => setApplyModalOpen(false)}>

@@ -84,6 +84,53 @@ alembic revision --autogenerate -m "add vacancies"
 alembic upgrade head
 ```
 
+## Candidate Dashboard and Resume Management
+
+Candidates use `/dashboard` to manage their profile, one private resume, and saved
+vacancies/internships. The editor supports multiple education, experience and project
+entries; employment history is optional. Name/email reuse the User record. Profile
+deletion removes extra profile data and avatar, preserving the account, resume and Favorites.
+Avatars accept JPEG/PNG/WebP (5 MB, 16 megapixels maximum), are converted to WebP
+at up to 512px, and stored in the database; no upload directory or new environment
+variables are required. Install the updated backend requirements (adds Pillow).
+
+Candidate-only API (existing Bearer JWT):
+
+| Methods | Path | Purpose |
+|---------|------|---------|
+| GET, POST, PUT, DELETE | `/candidate/profile` | Own profile; POST/PUT create or replace profile fields |
+| GET, POST, DELETE | `/candidate/profile/avatar` | Own avatar; POST uses multipart `file` |
+| GET, POST, PUT, DELETE | `/candidate/resume` | Own resume; POST creates, PUT replaces |
+| GET | `/candidate/saved-vacancies` | Own available saved vacancy cards |
+| PUT, DELETE | `/candidate/saved-vacancies/{id}` | Idempotent save/remove |
+
+Resume writes require a title (2–255 characters). Education, experience and projects
+are arrays of `{name, detail, period, description}`; skills/languages are string arrays.
+Other sections are optional. Hidden/closed vacancies are unavailable to save and
+omitted from Favorites until active again. Use the catalog's Save button to add items
+and the dashboard's Saved tab to remove them.
+
+From `backend/` (activate `.venv` first; Windows: `.venv\Scripts\Activate.ps1`):
+
+```bash
+pip install -r requirements.txt
+alembic upgrade head
+python -m app.seed_candidate
+pytest tests/test_candidate.py -q
+pytest tests -q  # includes auth, search/catalog and employer regression tests
+```
+
+Migration `c92e714a03b1` follows `f7c1f38c6b2b` and adds only
+`candidate_profiles`, `resumes`, and `saved_vacancies`; existing data is preserved.
+The additive seed runs only with `ENVIRONMENT=development` (the default), creates
+`candidate.demo@example.com` / `CandidateDemo123!` (development only), one fictional
+profile and student resume, and saves up to two existing active vacancies. It preserves
+existing records and passwords on reruns. Create vacancies before seeding to get saved
+examples; the seed does not create or modify employer/vacancy records.
+
+From `frontend/`, run `npm run lint` and `npm run build`. No frontend test framework
+is configured; no additional frontend testing dependency is introduced.
+
 ## Deployment
 
 **Database → Neon** (free Postgres, doesn't expire). Create a project, copy the connection string.

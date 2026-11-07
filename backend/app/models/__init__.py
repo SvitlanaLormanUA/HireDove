@@ -1,4 +1,5 @@
 from app.models.company import CompanyProfile
+from app.models.candidate import CandidateProfile, Resume, SavedVacancy
 from app.models.user import User, UserRole
 from app.models.vacancy import ExperienceLevel, Vacancy, VacancyStatus, WorkFormat
 
@@ -10,4 +11,7 @@ __all__ = [
     "WorkFormat",
     "ExperienceLevel",
     "CompanyProfile",
+    "CandidateProfile",
+    "Resume",
+    "SavedVacancy",
 ]

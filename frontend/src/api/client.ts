@@ -38,13 +38,14 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   })
 
   if (res.status === 204) return undefined as T
+  if (res.ok && res.headers.get('Content-Type')?.startsWith('image/')) return await res.blob() as T
 
   const body = await res.json().catch(() => null)
   if (!res.ok) {

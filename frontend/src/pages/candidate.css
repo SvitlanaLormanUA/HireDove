@@ -1,0 +1,6 @@
+.candidate-fields { border: 0; padding: 0; margin: 0; display: grid; gap: 1.25rem; min-width: 0; }
+.candidate-entry { border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; display: grid; gap: 1rem; min-width: 0; }
+.candidate-avatar { margin-top: 2rem; display: grid; gap: 1rem; justify-items: start; }
+.candidate-avatar img { border-radius: 50%; object-fit: cover; }
+.candidate-resume p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.candidate-tabs { flex-wrap: wrap; }
