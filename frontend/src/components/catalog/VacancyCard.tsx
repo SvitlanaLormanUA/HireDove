@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { EXPERIENCE_LABELS, WORK_FORMAT_LABELS, type VacancyCardData } from '../../api/vacancies'
 
 // SQLite returns timestamps without a timezone; treat those as UTC.
@@ -15,12 +16,15 @@ function timeAgo(iso: string): string {
   return rtf.format(Math.round(diffMin / (60 * 24)), 'day')
 }
 
-// TODO: when the vacancy details page exists, wrap the title in <Link to={`/vacancies/${vacancy.id}`}>.
 export function VacancyCard({ vacancy }: { vacancy: VacancyCardData }) {
   return (
     <article className="vacancy-card">
       <header>
-        <h2>{vacancy.title}</h2>
+        <h2>
+          <Link to={`/vacancies/${vacancy.id}`} className="vacancy-title-link">
+            {vacancy.title}
+          </Link>
+        </h2>
         <p className="vacancy-company">{vacancy.company_name}</p>
       </header>
       <ul className="tags" aria-label="Умови">
@@ -32,6 +36,9 @@ export function VacancyCard({ vacancy }: { vacancy: VacancyCardData }) {
       <p className="vacancy-snippet">{vacancy.snippet}</p>
       <footer>
         <time dateTime={parseDate(vacancy.created_at).toISOString()}>{timeAgo(vacancy.created_at)}</time>
+        <Link to={`/vacancies/${vacancy.id}`} className="details-link">
+          Детальніше →
+        </Link>
       </footer>
     </article>
   )

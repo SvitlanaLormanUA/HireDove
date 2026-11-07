@@ -114,9 +114,20 @@ export function CatalogPage() {
     <div className="catalog">
       <header className="catalog-header">
         <Link to="/" className="catalog-logo">HireDove</Link>
-        <nav>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {user ? (
-            <Link to="/dashboard">Кабінет</Link>
+            <>
+              {user.role === 'employer' && (
+                <Link
+                  to="/employer/vacancies/new"
+                  className="button-link"
+                  style={{ padding: '0.45rem 0.9rem', fontSize: '0.875rem', borderRadius: 8, margin: 0 }}
+                >
+                  + Опублікувати вакансію
+                </Link>
+              )}
+              <Link to="/dashboard">Кабінет</Link>
+            </>
           ) : (
             <>
               <Link to="/login">Увійти</Link>

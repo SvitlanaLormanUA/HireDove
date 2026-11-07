@@ -4,9 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import auth
+from app.api.routes import auth, employer, vacancies
 from app.core.config import get_settings
-from app.api.routes import auth, vacancies
 
 settings = get_settings()
 logger = logging.getLogger("hiredove")
@@ -44,3 +43,4 @@ def health() -> dict[str, str]:
 
 app.include_router(auth.router)
 app.include_router(vacancies.router)
+app.include_router(employer.router)

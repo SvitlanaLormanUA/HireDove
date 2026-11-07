@@ -2,6 +2,7 @@ import { api } from './client'
 
 export type WorkFormat = 'office' | 'remote' | 'hybrid'
 export type ExperienceLevel = 'none' | 'junior' | 'middle' | 'senior'
+export type VacancyStatus = 'active' | 'closed'
 
 export const WORK_FORMAT_LABELS: Record<WorkFormat, string> = {
   office: 'В офісі',
@@ -16,6 +17,11 @@ export const EXPERIENCE_LABELS: Record<ExperienceLevel, string> = {
   senior: '3+ роки',
 }
 
+export const VACANCY_STATUS_LABELS: Record<VacancyStatus, string> = {
+  active: 'Активна',
+  closed: 'Закрита',
+}
+
 export interface VacancyCardData {
   id: number
   title: string
@@ -25,6 +31,21 @@ export interface VacancyCardData {
   experience: ExperienceLevel
   industry: string
   snippet: string
+  created_at: string
+}
+
+export interface VacancyDetail {
+  id: number
+  employer_id: number
+  title: string
+  company_name: string
+  description: string
+  location: string
+  work_format: WorkFormat
+  experience: ExperienceLevel
+  industry: string
+  status: VacancyStatus
+  is_hidden: boolean
   created_at: string
 }
 
@@ -97,4 +118,8 @@ export function searchVacancies(f: CatalogFilters, signal?: AbortSignal): Promis
 
 export function fetchFilterOptions(): Promise<FilterOptions> {
   return api<FilterOptions>('/vacancies/filters')
+}
+
+export function fetchVacancyDetail(id: number | string): Promise<VacancyDetail> {
+  return api<VacancyDetail>(`/vacancies/${id}`)
 }

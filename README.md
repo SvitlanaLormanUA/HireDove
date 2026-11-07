@@ -55,12 +55,27 @@ Error codes: `401` wrong credentials / missing or expired token, `403` blocked a
 from app.api.deps import CurrentUser, require_roles
 from app.models.user import User, UserRole
 
-@router.get("/vacancies/mine")
+@router.get("/employer/vacancies")
 def my_vacancies(user: Annotated[User, Depends(require_roles(UserRole.employer))]): ...
 
 @router.get("/saved")
 def saved(user: CurrentUser): ...   # any logged-in, non-blocked user
 ```
+
+## Employer & Vacancies API
+
+| Method | Path                              | Auth     | Description                              |
+|--------|-----------------------------------|----------|------------------------------------------|
+| GET    | `/employer/profile`               | Employer | Get employer's company profile           |
+| PUT    | `/employer/profile`               | Employer | Create or update company profile         |
+| PATCH  | `/employer/profile`               | Employer | Partial update of company profile        |
+| GET    | `/employer/vacancies`             | Employer | List employer's vacancies (with counts)  |
+| POST   | `/employer/vacancies`             | Employer | Create new vacancy                       |
+| GET    | `/employer/vacancies/{id}`        | Employer | Get single vacancy for editing           |
+| PUT    | `/employer/vacancies/{id}`        | Employer | Update vacancy                           |
+| PATCH  | `/employer/vacancies/{id}/status` | Employer | Toggle status (`active` / `closed`)      |
+| DELETE | `/employer/vacancies/{id}`        | Employer | Delete vacancy                           |
+| GET    | `/vacancies/{id}`                 | Public   | Full details of a vacancy                |
 
 ### Schema changes
 

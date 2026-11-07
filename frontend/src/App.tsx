@@ -1,11 +1,13 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { GuestOnlyRoute, ProtectedRoute } from './auth/ProtectedRoute'
+import { CatalogPage } from './pages/CatalogPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ErrorPage } from './pages/ErrorPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
-import { CatalogPage } from './pages/CatalogPage'
+import { VacancyDetailPage } from './pages/VacancyDetailPage'
+import { VacancyFormPage } from './pages/VacancyFormPage'
 
 export default function App() {
   return (
@@ -20,13 +22,14 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
-          {/* Example of a role-restricted section:
-          <Route element={<ProtectedRoute roles={['employer']} />}>
-            <Route path="/employer/vacancies" element={<EmployerVacancies />} />
-          </Route> */}
 
-          {/* Until the public vacancy catalog exists, "/" goes to the dashboard. */}
+          <Route element={<ProtectedRoute roles={['employer', 'admin']} />}>
+            <Route path="/employer/vacancies/new" element={<VacancyFormPage />} />
+            <Route path="/employer/vacancies/:id/edit" element={<VacancyFormPage />} />
+          </Route>
+
           <Route path="/" element={<CatalogPage />} />
+          <Route path="/vacancies/:id" element={<VacancyDetailPage />} />
           <Route path="*" element={<ErrorPage code={404} />} />
         </Routes>
       </AuthProvider>
