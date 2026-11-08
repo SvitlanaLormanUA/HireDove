@@ -1,3 +1,4 @@
+import { HeaderTools } from '../components/HeaderTools'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ApiError } from '../api/client'
@@ -115,6 +116,7 @@ export function CatalogPage() {
       <header className="catalog-header">
         <Link to="/" className="catalog-logo">HireDove</Link>
         <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <HeaderTools />
           {user ? (
             <>
               {user.role === 'employer' && (

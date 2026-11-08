@@ -1,3 +1,4 @@
+import { HeaderTools } from '../components/HeaderTools'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ApiError } from '../api/client'
@@ -64,6 +65,7 @@ export function EmployerDashboardPage() {
         </Link>
 
         <div className="employer-user-meta">
+          <HeaderTools />
           <span className="user-badge">Роботодавець</span>
           <span>{companyProfile?.company_name || user?.full_name}</span>
           <button

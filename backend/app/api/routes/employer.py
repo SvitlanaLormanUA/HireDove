@@ -189,6 +189,9 @@ def update_employer_vacancy(
             detail="Ви не можете редагувати цю вакансію. Дозволено редагувати лише вакансії своєї компанії.",
         )
 
+    if vacancy.is_hidden and data.status is not None and data.status != vacancy.status:
+        raise HTTPException(409, "A hidden vacancy cannot change status until moderation is lifted")
+
     profile = db.scalar(select(CompanyProfile).where(CompanyProfile.user_id == user.id))
     for field, value in data.model_dump(exclude_unset=True).items():
         if field == "company_name" and profile and profile.company_name:
@@ -217,6 +220,9 @@ def update_vacancy_status(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Ви не можете змінювати статус цієї вакансії. Дозволено керувати лише вакансіями своєї компанії.",
         )
+
+    if vacancy.is_hidden and data.status != vacancy.status:
+        raise HTTPException(409, "A hidden vacancy cannot change status until moderation is lifted")
 
     vacancy.status = data.status
     db.commit()

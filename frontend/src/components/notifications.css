@@ -1,0 +1,21 @@
+.header-tools, .notification-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.notification-widget { position: relative; }
+.notification-trigger[aria-expanded='true'] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.notification-panel { position: absolute; right: 0; top: calc(100% + .5rem); z-index: 30; width: min(380px, calc(100vw - 2rem)); max-height: 70vh; overflow-y: auto; padding: 1rem; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); scrollbar-color: var(--border) var(--surface); overscroll-behavior: contain; }
+.notification-panel h2 { margin: 0 0 .75rem; font-size: 1.1rem; letter-spacing: -.02em; }
+.notification-panel > .notification-actions { padding-bottom: .75rem; border-bottom: 1px solid var(--border); }
+.notification-item { padding: .9rem; margin-top: .5rem; border: 1px solid transparent; border-radius: 10px; overflow-wrap: anywhere; transition: background .15s, border-color .15s; }
+.notification-item:hover, .notification-item:focus-within { background: var(--surface-2); border-color: var(--border); }
+.notification-item--unread { background: var(--accent-soft); }
+.notification-item--unread > strong { color: var(--accent); }
+.notification-item p { margin: .5rem 0; white-space: pre-wrap; font-size: .875rem; line-height: 1.5; }
+.notification-item small { color: var(--muted); }
+.notification-item .notification-actions { margin-top: .75rem; }
+.notification-panel [role='alert'] { padding: .75rem; border-radius: 8px; color: var(--error); background: var(--error-soft); font-size: .875rem; }
+.notification-panel .pagination { flex-wrap: wrap; gap: .35rem; margin-top: 1rem; }
+.notification-panel .pagination button { padding: .4rem .6rem; font-size: .875rem; }
+@media (max-width: 700px) {
+  .employer-top-nav, .employer-user-meta, .catalog-header, .catalog-header nav { flex-wrap: wrap; gap: .75rem; }
+  .notification-panel { position: fixed; top: 6rem; right: 1rem; }
+}
+@media (prefers-reduced-motion: reduce) { .notification-item { transition: none; } }

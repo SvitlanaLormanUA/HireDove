@@ -1,0 +1,11 @@
+.admin-filters { align-items: end; }
+.admin-filters > label, .admin-filters > .module-select-field { display: grid; gap: .4rem; flex: 1; min-width: 160px; }
+.admin-description { white-space: pre-wrap; overflow-wrap: anywhere; }
+.employer-container .tabs-nav { flex-wrap: wrap; }
+.admin-vacancy-details { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.admin-vacancy-details summary { padding: .75rem .9rem; cursor: pointer; font-size: .875rem; font-weight: 600; color: var(--text); border-radius: 10px; }
+.admin-vacancy-details summary:hover { background: var(--surface-2); }
+.admin-vacancy-details summary::marker { color: var(--accent); }
+.admin-vacancy-details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.admin-vacancy-details[open] summary { background: var(--surface-2); border-bottom: 1px solid var(--border); border-radius: 10px 10px 0 0; }
+.admin-vacancy-details > p { margin: .9rem; }

@@ -1,6 +1,8 @@
 from functools import lru_cache
 
-from pydantic import field_validator
+from typing import Literal
+
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -16,6 +18,17 @@ class Settings(BaseSettings):
 
     # Comma-separated list of allowed frontend origins, e.g. "https://hiredove.vercel.app"
     cors_origins: str = "http://localhost:5173"
+
+    # No network delivery unless SMTP is explicitly selected.
+    email_mode: Literal["console", "smtp"] = "console"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: SecretStr = SecretStr("")
+    smtp_from: str = "noreply@example.com"
+    smtp_starttls: bool = True
+    dev_admin_email: str = "admin.demo@example.com"
+    dev_admin_password: SecretStr = SecretStr("")
 
     # NFR 1.3: lock after 5 failed logins in a row
     max_failed_logins: int = 5

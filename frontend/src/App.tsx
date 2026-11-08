@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthContext'
 import { GuestOnlyRoute, ProtectedRoute } from './auth/ProtectedRoute'
 import { CatalogPage } from './pages/CatalogPage'
+import { AdminDashboardPage } from './pages/AdminDashboardPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { ErrorPage } from './pages/ErrorPage'
 import { LoginPage } from './pages/LoginPage'
@@ -21,6 +22,10 @@ export default function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute roles={['admin']} />}>
+            <Route path="/admin" element={<AdminDashboardPage />} />
           </Route>
 
           <Route element={<ProtectedRoute roles={['employer', 'admin']} />}>

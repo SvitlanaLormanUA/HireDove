@@ -15,3 +15,5 @@ __all__ = [
     "Resume",
     "SavedVacancy",
 ]
+
+from app.models.administration import AuditRecord, Notification

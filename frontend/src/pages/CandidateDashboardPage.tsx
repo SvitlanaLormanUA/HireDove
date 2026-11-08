@@ -1,3 +1,4 @@
+import { HeaderTools } from '../components/HeaderTools'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
 import { ProfileSection } from '../components/candidate/ProfileSection'
@@ -12,7 +13,7 @@ export function CandidateDashboardPage() {
   const [params, setParams] = useSearchParams()
   const tab = params.get('tab') ?? 'profile'
   return <div className="employer-container">
-    <header className="employer-top-nav"><Link to="/" className="nav-brand">HireDove</Link><div className="btn-group"><Link to="/" className="btn-sm">Каталог вакансій</Link><button className="btn-sm" onClick={logout}>Вийти</button><button className="btn-sm" onClick={logoutAll}>Вийти з усіх пристроїв</button></div></header>
+    <header className="employer-top-nav"><Link to="/" className="nav-brand">HireDove</Link><div className="btn-group"><HeaderTools /><Link to="/" className="btn-sm">Каталог вакансій</Link><button className="btn-sm" onClick={logout}>Вийти</button><button className="btn-sm" onClick={logoutAll}>Вийти з усіх пристроїв</button></div></header>
     <main>
       <section className="employer-hero"><h1>Кабінет кандидата</h1><p>Ваш профіль, резюме та збережені можливості для початку кар’єри.</p></section>
       <nav className="tabs-nav candidate-tabs" aria-label="Кабінет кандидата">

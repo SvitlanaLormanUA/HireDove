@@ -84,6 +84,8 @@ alembic revision --autogenerate -m "add vacancies"
 alembic upgrade head
 ```
 
+
+
 ## Candidate Dashboard and Resume Management
 
 Candidates use `/dashboard` to manage their profile, one private resume, and saved
@@ -130,6 +132,79 @@ examples; the seed does not create or modify employer/vacancy records.
 
 From `frontend/`, run `npm run lint` and `npm run build`. No frontend test framework
 is configured; no additional frontend testing dependency is introduced.
+
+
+
+## Admin Dashboard and Notifications
+
+Admins use `/admin` or their existing `/dashboard` entry with the same JWT/RBAC.
+The dashboard provides paginated user/vacancy lists, filters, moderation reasons,
+confirmation prompts, and a read-only audit journal. Admin accounts cannot be
+blocked or unblocked through moderation. Blocking takes effect on the next
+protected request, including already-issued JWTs, and preserves profiles/resumes.
+Blocked users cannot open notifications until unblocked; email remains available.
+
+Vacancy moderation uses the existing `is_hidden` flag independently of `active` /
+`closed`. Hidden vacancies disappear from catalog, details, filters and Favorites;
+existing records remain intact. Employers can correct content but cannot change
+its lifecycle status while hidden. Restore preserves the previous active/closed
+state. Applications and Chat are not present and are not added by this module.
+
+Admin API: `GET /admin/users`, `GET /admin/vacancies`,
+`GET /admin/vacancies/{id}`, `GET /admin/audit`; `PATCH /admin/users/{id}/block`
+or `/unblock`, and `PATCH /admin/vacancies/{id}/hide` or `/restore`, each with
+`{"reason":"..."}` (3–1000 characters). Lists follow catalog `page`, `page_size`,
+`items`, `total`, `pages` conventions. User filters: `role`, `is_active`, `q`;
+vacancy filters: `status`, `is_hidden`, `q`; audit filters: `action`, `target_type`,
+`target_id`, `admin_id`. Audit records contain actor, action, target, time and reason.
+State changes, audit and recipient notifications commit in one transaction;
+repeating an already-applied action does not send another notification or email.
+
+The header notification entry shows unread counts, paginated recent messages,
+read indicators, mark-one/all-read actions and safe related navigation. It refreshes
+on opening or manual refresh; no WebSockets or polling are required.
+Recipient-only API: `GET /notifications`, `GET /notifications/unread-count`,
+`PATCH /notifications/{id}/read`, `PATCH /notifications/read-all`.
+`create_notification()` is reusable by future modules; pass a unique event key per
+event/recipient to deduplicate retries. Notifications survive removal of related content.
+
+Critical moderation events trigger best-effort email **after commit**.
+`EMAIL_MODE=console` (default) sends nothing and logs only a suppression notice.
+For real delivery set `EMAIL_MODE=smtp`, `SMTP_HOST`, `SMTP_PORT` (587),
+`SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_STARTTLS` (true).
+Credentials come from environment/local `.env`; delivery errors are redacted and
+cannot roll back moderation. There is no durable email queue or automatic retry;
+in-app notifications are persistent. Light/dark/system selection reuses the existing
+palettes and persists in browser local storage (`hiredove_theme`).
+
+From `backend/`, with the existing virtual environment active:
+
+```bash
+alembic upgrade head
+# ENVIRONMENT must be development. Set DEV_ADMIN_PASSWORD privately in the
+# process environment or local backend/.env; optionally set DEV_ADMIN_EMAIL.
+python -m app.seed_admin
+pytest tests/test_admin_notifications.py tests/test_admin_migration.py -q
+pytest tests -q
+```
+
+Migration `d48a90f23b11` adds only `audit_records` and `notifications`, including
+foreign keys/indexes; Alembic and the app both read `Settings.database_url`.
+The idempotent seed creates one fictional `admin.demo@example.com` Admin by default,
+using the supplied password (existing passwords are preserved), and up to four demo
+notifications for that Admin and up to two existing Candidate/Employer accounts.
+It reuses one Candidate and one Employer where available and references an existing
+vacancy; no users other than the Admin,
+vacancies, moderation changes or email deliveries are generated. It rejects all
+non-development environments and refuses to promote an existing ordinary account.
+Never enable this seed against production data.
+
+From `frontend/`: `npm run lint` and `npm run build`. There is no existing frontend
+test framework; backend tests cover authorization, lifecycle, privacy, event
+deduplication, transaction rollback, email failures, seed safety, and migration
+upgrade/downgrade data preservation. Browser checks complement these tests.
+
+
 
 ## Deployment
 
