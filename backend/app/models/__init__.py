@@ -1,3 +1,5 @@
+from app.models.administration import AuditRecord, Notification
+from app.models.application import Application, ApplicationStatus, ChatMessage
 from app.models.company import CompanyProfile
 from app.models.candidate import CandidateProfile, Resume, SavedVacancy
 from app.models.user import User, UserRole
@@ -14,6 +16,9 @@ __all__ = [
     "CandidateProfile",
     "Resume",
     "SavedVacancy",
+    "AuditRecord",
+    "Notification",
+    "Application",
+    "ApplicationStatus",
+    "ChatMessage",
 ]
-
-from app.models.administration import AuditRecord, Notification

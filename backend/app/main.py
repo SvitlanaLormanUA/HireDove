@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import admin, auth, candidate, employer, notifications, vacancies
+from app.api.routes import admin, applications, auth, candidate, employer, notifications, vacancies
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -48,3 +48,4 @@ app.include_router(candidate.router)
 
 app.include_router(admin.router)
 app.include_router(notifications.router)
+app.include_router(applications.router)

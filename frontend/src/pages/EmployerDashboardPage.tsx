@@ -13,10 +13,11 @@ import { useAuth } from '../auth/useAuth'
 import { CompanyProfileSection } from '../components/employer/CompanyProfileSection'
 import { EmployerVacanciesSection } from '../components/employer/EmployerVacanciesSection'
 import './employer.css'
+import { EmployerApplicationsSection } from '../components/employer/EmployerApplicationsSection'
 
 export function EmployerDashboardPage() {
   const { user, logout } = useAuth()
-  const [activeTab, setActiveTab] = useState<'vacancies' | 'profile'>('vacancies')
+  const [activeTab, setActiveTab] = useState<'vacancies' | 'applications' | 'profile'>('vacancies')
   const [statusFilter, setStatusFilter] = useState<VacancyStatus | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
   const [data, setData] = useState<EmployerVacanciesResponse | null>(null)
@@ -124,6 +125,13 @@ export function EmployerDashboardPage() {
         >
           🏢 Профіль компанії
         </button>
+        <button
+          type="button"
+          className={`tab-btn ${activeTab === 'applications' ? 'active' : ''}`}
+          onClick={() => setActiveTab('applications')}
+        >
+          📥 Отримані відгуки
+        </button>
       </div>
 
       {error && <div className="alert-box alert-error">{error}</div>}
@@ -145,6 +153,7 @@ export function EmployerDashboardPage() {
       )}
 
       {activeTab === 'profile' && <CompanyProfileSection onSaved={handleRefresh} />}
+      {activeTab === 'applications' && <EmployerApplicationsSection />}
     </div>
   )
 }

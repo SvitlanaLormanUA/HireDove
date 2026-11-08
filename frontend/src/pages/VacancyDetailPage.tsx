@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { SaveVacancyButton } from '../components/candidate/SaveVacancyButton'
 import { Link, useParams } from 'react-router-dom'
+import {
+  APPLICATION_STATUS_LABELS,
+  fetchMyApplications,
+  submitApplication,
+  type ApplicationItem,
+} from '../api/applications'
 import { ApiError } from '../api/client'
 import { fetchCompanyProfile, type CompanyProfile } from '../api/employer'
 import {
@@ -10,6 +16,8 @@ import {
   type VacancyDetail,
 } from '../api/vacancies'
 import { useAuth } from '../auth/useAuth'
+import { openChatWithApplication } from '../components/ChatWidget'
+import { HeaderTools } from '../components/HeaderTools'
 import './employer.css'
 
 function formatDate(iso: string): string {
@@ -30,17 +38,28 @@ export function VacancyDetailPage() {
   const { user } = useAuth()
   const [vacancy, setVacancy] = useState<VacancyDetail | null>(null)
   const [myCompany, setMyCompany] = useState<CompanyProfile | null>(null)
+  const [myApplication, setMyApplication] = useState<ApplicationItem | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [applyModalOpen, setApplyModalOpen] = useState(false)
+  const [coverLetter, setCoverLetter] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [applyError, setApplyError] = useState<string | null>(null)
 
   useEffect(() => {
     if (user?.role === 'employer') {
       fetchCompanyProfile()
         .then((p) => setMyCompany(p))
         .catch(() => {})
+    } else if (user?.role === 'candidate' && id) {
+      fetchMyApplications()
+        .then((apps) => {
+          const found = apps.find((a) => a.vacancy_id === Number(id))
+          if (found) setMyApplication(found)
+        })
+        .catch(() => {})
     }
-  }, [user])
+  }, [user, id])
 
   useEffect(() => {
     if (!id) return
@@ -65,6 +84,22 @@ export function VacancyDetailPage() {
       ignore = true
     }
   }, [id])
+
+  const handleApplySubmit = async () => {
+    if (!vacancy || submitting) return
+    setSubmitting(true)
+    setApplyError(null)
+    try {
+      const created = await submitApplication(vacancy.id, coverLetter)
+      setMyApplication(created)
+      setApplyModalOpen(false)
+      setCoverLetter('')
+    } catch (err: unknown) {
+      setApplyError(err instanceof ApiError ? err.message : 'Не вдалося надіслати відгук.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -101,9 +136,12 @@ export function VacancyDetailPage() {
 
   return (
     <div className="vacancy-detail-container">
-      <Link to="/" className="back-link">
-        ← Повернутися до каталогу
-      </Link>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <Link to="/" className="back-link" style={{ marginBottom: 0 }}>
+          ← Повернутися до каталогу
+        </Link>
+        <HeaderTools />
+      </div>
 
       <article className="vacancy-detail-card">
         <header className="vacancy-detail-header">
@@ -161,12 +199,28 @@ export function VacancyDetailPage() {
               >
                 ℹ️ Роботодавці не можуть відгукуватися на вакансії
               </span>
+            ) : myApplication ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+                <span className="badge badge-active" style={{ padding: '0.55rem 0.9rem', fontSize: '0.88rem' }}>
+                  ✓ Ви вже відгукнулися ({APPLICATION_STATUS_LABELS[myApplication.status]})
+                </span>
+                <button
+                  type="button"
+                  className="btn-sm btn-primary"
+                  onClick={() => openChatWithApplication(myApplication.id)}
+                >
+                  💬 Написати роботодавцю
+                </button>
+              </div>
             ) : vacancy.status === 'active' ? (
               <button
                 type="button"
                 className="primary"
                 style={{ margin: 0, paddingInline: '1.5rem' }}
-                onClick={() => setApplyModalOpen(true)}
+                onClick={() => {
+                  setApplyError(null)
+                  setApplyModalOpen(true)
+                }}
               >
                 Відгукнутися на вакансію
               </button>
@@ -180,6 +234,7 @@ export function VacancyDetailPage() {
       </article>
 
       {vacancy.status === 'active' && <SaveVacancyButton key={vacancy.id} vacancyId={vacancy.id} />}
+
       {/* Modal for application info (candidates and guests only) */}
       {applyModalOpen && !isEmployer && (
         <div className="modal-backdrop" onClick={() => setApplyModalOpen(false)}>
@@ -190,9 +245,28 @@ export function VacancyDetailPage() {
               <strong>{vacancy.company_name}</strong>.
             </p>
             {user ? (
-              <p style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>
-                Ваш профіль кандидата ({user.full_name}, {user.email}) буде надіслано роботодавцю.
-              </p>
+              <>
+                <p style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>
+                  Ваш профіль кандидата ({user.full_name}, {user.email}) та збережене резюме будуть надіслані роботодавцю.
+                </p>
+                <div style={{ marginTop: '0.75rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', marginBottom: '0.35rem', fontWeight: 600 }}>
+                    Супровідний лист (необов’язково)
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={coverLetter}
+                    onChange={(e) => setCoverLetter(e.target.value)}
+                    placeholder="Напишіть коротко, чому вас зацікавила ця позиція..."
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                {applyError && (
+                  <div className="alert-box alert-error" style={{ marginTop: '0.75rem' }}>
+                    {applyError}
+                  </div>
+                )}
+              </>
             ) : (
               <p style={{ fontSize: '0.9rem', color: 'var(--muted)' }}>
                 Для надсилання резюме та спілкування з роботодавцем, будь ласка,{' '}
@@ -207,12 +281,10 @@ export function VacancyDetailPage() {
                 <button
                   type="button"
                   className="btn-sm btn-primary"
-                  onClick={() => {
-                    alert('Дякуємо! Функціонал прямого відгуку та чату входить у модуль "Відгуки та Внутрішній Чат".')
-                    setApplyModalOpen(false)
-                  }}
+                  disabled={submitting}
+                  onClick={handleApplySubmit}
                 >
-                  Підтвердити відгук
+                  {submitting ? 'Надсилання…' : 'Підтвердити відгук'}
                 </button>
               )}
             </div>
